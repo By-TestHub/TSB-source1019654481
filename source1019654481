@@ -213,6 +213,13 @@ game:GetService("RunService").Stepped:Connect(function()
     end
 end)
 
+Tab2:Button({
+    Title = "ชักว่าว R6",
+    Callback = function()
+        loadstring(game:HttpGet("https://pastefy.app/3q0ZUYSV/raw"))()
+    end
+})
+
 Tab2:Toggle({
     Title = "กันโปรกันเด็น",
     Callback = function(state)
