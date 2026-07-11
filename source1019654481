@@ -1,10 +1,10 @@
 local AllowedUsers = {
     "Kaprao_677",
     "Goopro_67",
-	"ucveyhxe9463",
-	"0wen2O03",
-	"",
-	"",
+    "Testhub_one",
+    "0wen2O03",
+    "",
+    "",
     ""
 }
 
@@ -27,141 +27,96 @@ end
 
 if game.PlaceId ~= 10449761463 then return end
 
+local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
+
+local Window = WindUI:CreateWindow({
+    Title = "TEST HUB |  The Strongest Battleground",
+    Icon = "rbxassetid://117649776522765",
+    Folder = "TestHub",
+    Size = UDim2.fromOffset(580, 460),
+    Transparent = true,
+    Theme = "Dark",
+    AccentColor = Color3.fromRGB(120, 220, 255)
+})
+
+local Tab = Window:Tab({Title = "เมนูหลัก",Icon = "box"})
+local Tab2 = Window:Tab({ Title = "เกรียน",Icon = "swords"})
+local Tab3 = Window:Tab({ Title = "บิน",Icon = "plane"})
+local Tab4 = Window:Tab({ Title = "วาร์ป",Icon = "zap"})
+local Tab5 = Window:Tab({ Title = "ตั้งค่า", Icon = "info" })
+
+local Button = Tab:Button({
+    Title = "สคริปฟาร์มค่าย Somtank",
+    Locked = false,
+    Callback = function()
+        loadstring(game:HttpGet('https://raw.githubusercontent.com/M4VOWJ8IAKSR5WFRCCJ7AW5IW/ScrFr/refs/heads/main/The%20Strongest%20Battlegrounds-obfuscated'))()
+    end
+})
+
+
+local Button = Tab:Button({
+    Title = "บินไปถือถังขยะ + และอื่นๆ",
+    Locked = false,
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/yes1nt/yes/refs/heads/main/Trashcan%20Man", true))()
+    end
+})
+
+Tab:Button({
+    Title = "กด หากต้องการใช้สกิวเหมือนเดิม (รีตัว)",
+    Callback = function()
+        local lp = game:GetService("Players").LocalPlayer
+        local char = lp.Character
+        if char and char:FindFirstChild("HumanoidRootPart") and char:FindFirstChild("Humanoid") then
+            local savedCFrame = char:GetPivot()
+            task.spawn(function()
+                local newChar = lp.CharacterAdded:Wait()
+                local newRoot = newChar:WaitForChild("HumanoidRootPart", 5)
+                if newRoot then
+                    task.wait() 
+                    newChar:PivotTo(savedCFrame)
+                end
+            end)
+            local hum = char:FindFirstChild("Humanoid")
+            if hum then
+                hum.Health = 0
+                hum:ChangeState(Enum.HumanoidStateType.Dead)
+            end
+        end
+    end
+})
+
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
-local RunService = game:GetService("RunService")
-local TweenService = game:GetService("TweenService")
 
-local flingActive = false
-local spinActive = false
-local playerAntiFling = false
-local spinSpeed = 100000 
-local OldPos = nil 
+local selectedPlayer = nil
 
-local sgui = Instance.new("ScreenGui")
-sgui.Name = "TestHubFreshGui"
-sgui.Parent = (gethui and gethui()) or LocalPlayer:WaitForChild("PlayerGui")
-sgui.ResetOnSpawn = false
-
-local main = Instance.new("Frame")
-main.Size = UDim2.new(0, 240, 0, 165)
-main.Position = UDim2.new(0.3, 0, 0.3, 0)
-main.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-main.BorderSizePixel = 0
-main.Active = true
-main.Draggable = true
-main.Parent = sgui
-
-local corner = Instance.new("UICorner", main)
-corner.CornerRadius = UDim.new(0, 8)
-
-local titleBar = Instance.new("Frame")
-titleBar.Size = UDim2.new(1, 0, 0, 30)
-titleBar.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-titleBar.BorderSizePixel = 0
-titleBar.Parent = main
-
-local titleCorner = Instance.new("UICorner", titleBar)
-titleCorner.CornerRadius = UDim.new(0, 8)
-
-local titleText = Instance.new("TextLabel")
-titleText.Size = UDim2.new(0.7, 0, 1, 0)
-titleText.Position = UDim2.new(0, 10, 0, 0)
-titleText.BackgroundTransparency = 1
-titleText.Text = "TEST HUB | ฟังก์ชันเสริม"
-titleText.TextColor3 = Color3.fromRGB(255, 255, 255)
-titleText.TextSize = 13
-titleText.Font = Enum.Font.SourceSansBold
-titleText.TextXAlignment = Enum.TextXAlignment.Left
-titleText.Parent = titleBar
-
-local minBtn = Instance.new("TextButton")
-minBtn.Size = UDim2.new(0, 25, 0, 25)
-minBtn.Position = UDim2.new(1, -30, 0, 2)
-minBtn.BackgroundTransparency = 1
-minBtn.Text = "–"
-minBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-minBtn.TextSize = 14
-minBtn.Font = Enum.Font.SourceSansBold
-minBtn.Parent = titleBar
-
-local container = Instance.new("ScrollingFrame")
-container.Size = UDim2.new(1, 0, 1, -30)
-container.Position = UDim2.new(0, 0, 0, 30)
-container.BackgroundTransparency = 1
-container.CanvasSize = UDim2.new(0, 0, 0, 135)
-container.ScrollBarThickness = 3
-container.Parent = main
-
-local minimized = false
-minBtn.Activated:Connect(function()
-    minimized = not minimized
-    if minimized then
-        container.Visible = false
-        main:TweenSize(UDim2.new(0, 140, 0, 30), "Out", "Quad", 0.1, true)
-        minBtn.Text = "+"
-    else
-        main:TweenSize(UDim2.new(0, 240, 0, 165), "Out", "Quad", 0.1, true)
-        task.wait(0.1)
-        container.Visible = true
-        minBtn.Text = "–"
-    end
-end)
-
-local function createSwitch(name, yPos, callback)
-    local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(1, -20, 0, 40)
-    frame.Position = UDim2.new(0, 10, 0, yPos)
-    frame.BackgroundTransparency = 1
-    frame.Parent = container
-
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(0.65, 0, 1, 0)
-    label.BackgroundTransparency = 1
-    label.Text = name
-    label.TextColor3 = Color3.fromRGB(230, 230, 230)
-    label.TextSize = 12
-    label.Font = Enum.Font.SourceSansBold
-    label.TextXAlignment = Enum.TextXAlignment.Left
-    label.Parent = frame
-
-    local switch = Instance.new("TextButton")
-    switch.Size = UDim2.new(0, 36, 0, 18)
-    switch.Position = UDim2.new(1, -40, 0, 11)
-    switch.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-    switch.Text = ""
-    switch.Parent = frame
-
-    local swCorner = Instance.new("UICorner", switch)
-    swCorner.CornerRadius = UDim.new(0, 9)
-
-    local circle = Instance.new("Frame")
-    circle.Size = UDim2.new(0, 12, 0, 12)
-    circle.Position = UDim2.new(0, 3, 0, 3)
-    circle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    circle.Parent = switch
-
-    local circCorner = Instance.new("UICorner", circle)
-    circCorner.CornerRadius = UDim.new(0, 6)
-
-    local active = false
-    switch.Activated:Connect(function()
-        active = not active
-        if active then
-            TweenService:Create(switch, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(0, 180, 70)}):Play()
-            TweenService:Create(circle, TweenInfo.new(0.1), {Position = UDim2.new(0, 21, 0, 3)}):Play()
-        else
-            TweenService:Create(switch, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(45, 45, 45)}):Play()
-            TweenService:Create(circle, TweenInfo.new(0.1), {Position = UDim2.new(0, 3, 0, 3)}):Play()
+local function getPlayers()
+    local list = {}
+    for _, p in pairs(Players:GetPlayers()) do
+        if p ~= LocalPlayer then
+            table.insert(list, p.Name)
         end
-        callback(active)
-    end)
+    end
+    return list
 end
 
-local function SkidFling(TargetPlayer)
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+local runService = game:GetService("RunService")
+
+local flingActive = false
+local AllBool = true 
+getgenv().OldPos = nil 
+
+local Message = function(_Title, _Text, Time)
+    game:GetService("StarterGui"):SetCore("SendNotification", {Title = _Title, Text = _Text, Duration = Time})
+end
+
+local SkidFling = function(TargetPlayer)
     if not flingActive then return end
     
-    local Character = LocalPlayer.Character
+    local Character = Player.Character
     local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
     local RootPart = Humanoid and Humanoid.RootPart
 
@@ -171,6 +126,7 @@ local function SkidFling(TargetPlayer)
     local THead = TCharacter and TCharacter:FindFirstChild("Head")
 
     if Character and Humanoid and RootPart and TCharacter and TCharacter:FindFirstChildWhichIsA("BasePart") then
+
         if THead then workspace.CurrentCamera.CameraSubject = THead end
         
         local FPos = function(BasePart, Pos, Ang)
@@ -189,7 +145,7 @@ local function SkidFling(TargetPlayer)
             repeat
                 if RootPart and THumanoid and flingActive then
                     Angle = Angle + 100
-                    FPos(BasePart, CFrame.new(0, 1.5, 0) + THumanoid.MoveDirection * BasePart.Velocity.Magnitude / 1.25, CFrame.Angles(math.rad(Angle), 0, 0))
+                    FPos(BasePart, CFrame.new(0, 1.5, 0) + THumanoid.MoveDirection * BasePart.Velocity.Magnitude / 1.25, CFrame.Angles(math.rad(Angle),0 ,0))
                     task.wait()
                     FPos(BasePart, CFrame.new(0, -1.5, 0) + THumanoid.MoveDirection * BasePart.Velocity.Magnitude / 1.25, CFrame.Angles(math.rad(Angle), 0, 0))
                     task.wait()
@@ -216,6 +172,7 @@ local function SkidFling(TargetPlayer)
     
         BV:Destroy()
         Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, true)
+        workspace.CurrentCamera.CameraSubject = Humanoid
     end
 end
 
@@ -223,8 +180,8 @@ task.spawn(function()
     while true do
         task.wait(0.05)
         if flingActive then
-            for _, x in ipairs(Players:GetPlayers()) do
-                if x ~= LocalPlayer and flingActive then
+            for _, x in next, Players:GetPlayers() do
+                if x ~= Player and flingActive then
                     SkidFling(x)
                 end
             end
@@ -232,14 +189,90 @@ task.spawn(function()
     end
 end)
 
-RunService.Heartbeat:Connect(function()
-    if spinActive and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-        local root = LocalPlayer.Character.HumanoidRootPart
-        local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+Tab2:Button({
+    Title = "หายตัว",
+    Callback = function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/dphHq47G"))()
+    end
+})
+
+local playerAntiFling = false
+
+-- ระบบวนลูปปิดการชนของผู้เล่นคนอื่น (ทำงานตลอดเวลาเมื่อเปิดใช้งาน)
+game:GetService("RunService").Stepped:Connect(function()
+    if playerAntiFling then
+        for _, p in pairs(game:GetService("Players"):GetPlayers()) do
+            if p ~= game:GetService("Players").LocalPlayer and p.Character then
+                for _, part in pairs(p.Character:GetDescendants()) do
+                    if part:IsA("BasePart") and part.CanCollide == true then
+                        part.CanCollide = false
+                    end
+                end
+            end
+        end
+    end
+end)
+
+Tab2:Toggle({
+    Title = "กันโปรกันเด็น",
+    Callback = function(state)
+        playerAntiFling = state
+
+        if not state then
+            for _, p in pairs(game:GetService("Players"):GetPlayers()) do
+                if p ~= game:GetService("Players").LocalPlayer and p.Character then
+                    for _, part in pairs(p.Character:GetDescendants()) do
+                        if part:IsA("BasePart") then
+                            part.CanCollide = true
+                        end
+                    end
+                end
+            end
+        end
+    end
+})
+
+Tab2:Toggle({
+    Title = "วาปกระเด็นทุกคนในแมพ (ใช้ได้สำหรับแมพที่เดินชนกันได้เท่านั้น)",
+    Callback = function(state)
+        flingActive = state
+        
+        local Character = LocalPlayer.Character
+        local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
+        local RootPart = Humanoid and Humanoid.RootPart
+
+        if state then
+            if RootPart then
+                getgenv().OldPos = RootPart.CFrame
+                getgenv().FPDH = workspace.FallenPartsDestroyHeight
+                workspace.FallenPartsDestroyHeight = 0/0 
+            end
+        else
+            if RootPart and getgenv().OldPos then
+                repeat
+                    task.wait()
+                    RootPart.CFrame = getgenv().OldPos
+                    RootPart.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+                    RootPart.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+                    if Humanoid then Humanoid:ChangeState(Enum.HumanoidStateType.GettingUp) end
+                until (RootPart.Position - getgenv().OldPos.Position).Magnitude < 5
+                if getgenv().FPDH then workspace.FallenPartsDestroyHeight = getgenv().FPDH end
+            end
+        end
+    end
+})
+
+local player = game:GetService("Players").LocalPlayer
+local spinFlingActive = false
+local spinSpeed = 100000 
+runService.Heartbeat:Connect(function()
+    if spinFlingActive and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        local root = player.Character.HumanoidRootPart
+        local hum = player.Character:FindFirstChildOfClass("Humanoid")
         local oldRotVel = root.RotVelocity
         root.RotVelocity = Vector3.new(0, spinSpeed, 0)
         
-        RunService.RenderStepped:Wait()
+        runService.RenderStepped:Wait()
         root.RotVelocity = oldRotVel
         if hum then
             if hum:GetState() == Enum.HumanoidStateType.FallingDown or hum:GetState() == Enum.HumanoidStateType.Ragdoll then
@@ -249,63 +282,421 @@ RunService.Heartbeat:Connect(function()
     end
 end)
 
-local function SetOtherPlayersCollision(canCollideStatus)
-    for _, p in ipairs(Players:GetPlayers()) do
-        if p ~= LocalPlayer and p.Character then
-            for _, part in ipairs(p.Character:GetDescendants()) do
-                if part:IsA("BasePart") then
-                    part.CanCollide = canCollideStatus
+Tab2:Toggle({
+    Title = "เดินชนกระเด็น (ใช้ได้สำหรับแมพที่เดินชนกันได้เท่านั้น)",
+    Callback = function(state)
+        spinFlingActive = state
+    end
+})
+
+Tab3:Button({
+    Title = "บินแบบ FLY GUI V3 ไม่ทะลุกำแพง",
+    Callback = function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/2RiADZZu"))()
+    end
+})
+
+Tab3:Button({
+    Title = "บินแบบ FLY GUI V3 ทะลุกำแพง ",
+    Callback = function()
+        loadstring(game:HttpGet("https://pastefy.app/syLfCbSr/raw"))()
+    end
+})
+
+Tab3:Button({
+    Title = "บินแบบ FLY GUI V4 ไม่ทะลุกำแพง",
+    Callback = function()
+        getgenv().noclipfly = false
+        loadstring(game:HttpGet("https://pastebin.com/raw/Uay3DAVt"))()
+    end
+})
+
+Tab3:Button({
+    Title = "บินแบบ FLY GUI V4 ทะลุกำแพง",
+    Callback = function()
+        getgenv().noclipfly = true
+        loadstring(game:HttpGet("https://pastebin.com/raw/Uay3DAVt"))()
+    end
+})
+
+local infiniteJumpActive = false
+local UIS = game:GetService("UserInputService")
+local player = game.Players.LocalPlayer
+
+local RunService = game:GetService("RunService")
+local flying = false
+local noclipMode = false 
+local flySpeed = 80 
+local bv, bg
+
+local function toggleFly(state, noclip)
+    flying = state
+    noclipMode = noclip
+    local character = player.Character
+    if not character then return end
+    
+    local root = character:FindFirstChild("HumanoidRootPart")
+    local hum = character:FindFirstChild("Humanoid")
+    
+    if flying and root and hum then
+        bv = Instance.new("BodyVelocity", root)
+        bv.MaxForce = Vector3.new(1e9, 1e9, 1e9)
+        bv.Velocity = Vector3.zero
+        
+        bg = Instance.new("BodyGyro", root)
+        bg.MaxTorque = Vector3.new(1e9, 1e9, 1e9)
+        bg.P = 10000
+        bg.D = 100
+        bg.CFrame = root.CFrame
+        
+        hum.PlatformStand = true
+    else
+        if bv then bv:Destroy() end
+        if bg then bg:Destroy() end
+        if hum then hum.PlatformStand = false end
+    end
+end
+
+RunService.RenderStepped:Connect(function()
+    if flying and player.Character then
+        local root = player.Character:FindFirstChild("HumanoidRootPart")
+        local hum = player.Character:FindFirstChild("Humanoid")
+        local cam = workspace.CurrentCamera
+        
+        if root and hum and bv and bg then
+            local moveDir = hum.MoveDirection
+            if moveDir.Magnitude > 0 then
+                local camLook = cam.CFrame.LookVector
+                local flatLook = Vector3.new(camLook.X, 0, camLook.Z).Unit
+                local camRight = cam.CFrame.RightVector
+                local flatRight = Vector3.new(camRight.X, 0, camRight.Z).Unit
+                
+                local forwardIntent = moveDir:Dot(flatLook)
+                local rightIntent = moveDir:Dot(flatRight)
+                local flyDir = (cam.CFrame.LookVector * forwardIntent) + (cam.CFrame.RightVector * rightIntent)
+                bv.Velocity = flyDir * flySpeed 
+            else
+                bv.Velocity = Vector3.zero
+            end
+            bg.CFrame = cam.CFrame
+        end
+    end
+end)
+
+RunService.Stepped:Connect(function()
+    if flying and noclipMode and player.Character then
+        for _, part in pairs(player.Character:GetDescendants()) do
+            if part:IsA("BasePart") then part.CanCollide = false end
+        end
+    end
+end)
+
+Tab3:Toggle({
+    Title = "บินแบบปกติไม่ทะลุกำแพง",
+    Callback = function(state)
+        toggleFly(state, false)
+    end
+})
+
+Tab3:Toggle({
+    Title = "บินแบบปกติทะลุกำแพง",
+    Callback = function(state)
+        toggleFly(state, true)
+    end
+})
+
+Tab3:Input({
+    Title = "ปรับความเร็วบินแบบปกติ",
+    Callback = function(txt)
+        local s = tonumber(txt)
+        if s then 
+            flySpeed = s 
+        end
+    end
+})
+
+local UserInputService = game:GetService("UserInputService")
+local Camera = workspace.CurrentCamera
+
+local clickTPActive = false
+
+Tab4:Toggle({
+    Title = "คลิกเพื่อวาร์ป",
+    Callback = function(state)
+        clickTPActive = state
+    end
+})
+
+local function getScreenWorldPosition(screenPos)
+    local ray = Camera:ViewportPointToRay(screenPos.X, screenPos.Y)
+    local raycastParams = RaycastParams.new()
+    raycastParams.FilterType = Enum.RaycastFilterType.Exclude
+    raycastParams.FilterDescendantsInstances = {LocalPlayer.Character} 
+    
+    local result = workspace:Raycast(ray.Origin, ray.Direction * 1000, raycastParams)
+    if result then
+        return result.Position
+    end
+    return nil
+end
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if not clickTPActive then return end
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        local myChar = LocalPlayer.Character
+        if myChar and myChar:FindFirstChild("HumanoidRootPart") then
+            local targetPos = getScreenWorldPosition(input.Position)
+            if targetPos then
+                myChar.HumanoidRootPart.CFrame = CFrame.new(targetPos + Vector3.new(0, 3, 0))
+            end
+        end
+    end
+end)
+
+local PlayerDropdown = Tab4:Dropdown({
+    Title = "เลือกผู้เล่น",
+    Values = getPlayers(),
+    Callback = function(v)
+        selectedPlayer = v
+    end
+})
+
+Tab4:Button({
+    Title = "รีเซ็ตรายชื่อผู้เล่น",
+    Callback = function()
+        PlayerDropdown:Refresh(getPlayers())
+    end
+})
+
+Tab4:Button({
+    Title = "วาร์ปไปหาผู้เล่นที่เลือก",
+    Callback = function()
+        if selectedPlayer then
+            local targetPlayer = Players:FindFirstChild(selectedPlayer)
+            if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                local myChar = LocalPlayer.Character
+                if myChar and myChar:FindFirstChild("HumanoidRootPart") then
+                    myChar.HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame
                 end
             end
         end
     end
-end
+})
 
-RunService.Stepped:Connect(function()
-    if playerAntiFling then
-        SetOtherPlayersCollision(false)
-    end
-end)
 
-createSwitch("วาปกระเด็นทุกคนในแมพ", 5, function(state)
-    flingActive = state
-    
-    local char = LocalPlayer.Character
-    if state then
-        if char and char:FindFirstChild("HumanoidRootPart") then
-            OldPos = char.HumanoidRootPart.CFrame
+
+Tab5:Button({
+    Title = "คัดลอกลิงค์ Discord",
+    Desc = "คัดลอกลิงค์กลุ่ม Discord ไว้ในคลิปบอร์ด",
+    Callback = function()
+        if setclipboard then
+            setclipboard("https://discord.gg/Ttwq9Udwhc")
+        elseif syn and syn.write_clipboard then
+            syn.write_clipboard("https://discord.gg/Ttwq9Udwhc")
         end
-    else
-        if OldPos and char and char:FindFirstChild("HumanoidRootPart") then
-            local root = char.HumanoidRootPart
+        game:GetService("StarterGui"):SetCore("SendNotification", { 
+            Title = "คัดลอกสำเร็จ",
+            Text = "คัดลอกลิงค์ Discord แล้ว",
+            Duration = 5,
+        })
+    end
+})
+
+Tab5:Button({
+    Title = "กันหลุดหาก AFK เกิน 20 นาทีจะไม่หลุด",
+    Callback = function()
+        local function ShowCustomNotify(title, text)
+            local plrgui = (gethui and gethui()) or game.Players.LocalPlayer:WaitForChild("PlayerGui")
             
-            root.Velocity = Vector3.zero
-            root.RotVelocity = Vector3.zero
-            root.Anchored = true 
+            local notifyGui = Instance.new("ScreenGui")
+            notifyGui.Name = "CustomAFKNotify"
+            notifyGui.Parent = plrgui
             
-            root.CFrame = OldPos 
+            local frame = Instance.new("Frame")
+            frame.Size = UDim2.new(0, 220, 0, 70)
+            frame.Position = UDim2.new(1, -240, 1, -90)
+            frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+            frame.BackgroundTransparency = 0.1
+            frame.BorderSizePixel = 0
+            frame.Parent = notifyGui
             
-            workspace.CurrentCamera.CameraSubject = char:FindFirstChildOfClass("Humanoid")
+            local uiCorner = Instance.new("UICorner")
+            uiCorner.CornerRadius = UDim.new(0, 8)
+            uiCorner.Parent = frame
             
-            task.spawn(function()
-                task.wait(0.05)
-                if char and char:FindFirstChild("HumanoidRootPart") then
-                    char.HumanoidRootPart.Anchored = false
-                end
+            local titleLabel = Instance.new("TextLabel")
+            titleLabel.Size = UDim2.new(1, -20, 0, 25)
+            titleLabel.Position = UDim2.new(0, 10, 0, 5)
+            titleLabel.Text = title
+            titleLabel.TextColor3 = Color3.fromRGB(120, 220, 255) 
+            titleLabel.TextSize = 15
+            titleLabel.Font = Enum.Font.SourceSansBold
+            titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+            titleLabel.BackgroundTransparency = 1
+            titleLabel.Parent = frame
+            
+            local textLabel = Instance.new("TextLabel")
+            textLabel.Size = UDim2.new(1, -20, 0, 30)
+            textLabel.Position = UDim2.new(0, 10, 0, 30)
+            textLabel.Text = text
+            textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+            textLabel.TextSize = 14
+            textLabel.Font = Enum.Font.SourceSans
+            textLabel.TextXAlignment = Enum.TextXAlignment.Left
+            textLabel.BackgroundTransparency = 1
+            textLabel.Parent = frame
+            
+            task.delay(5, function()
+                notifyGui:Destroy()
             end)
         end
+
+        local VirtualUser = game:GetService("VirtualUser")
+        game:GetService("Players").LocalPlayer.Idled:Connect(function()
+            VirtualUser:CaptureController()
+            VirtualUser:ClickButton2(Vector2.new())
+            
+        end)
+        
+        ShowCustomNotify("AFK","เปิดโหมด AFK แล้วจะไม่เด้งออก")
+    end
+})
+
+local fpsLabel = Tab5:Paragraph({
+    Title = "FPS: ...",
+})
+
+local lastTime = os.clock()
+local frameCount = 0
+RunService.RenderStepped:Connect(function()
+    frameCount = frameCount + 1
+    local currentTime = os.clock()
+    if currentTime - lastTime >= 0.3 then
+        local fps = math.floor(frameCount / (currentTime - lastTime))
+        fpsLabel:SetTitle("FPS: " .. fps)
+        lastTime = currentTime
+        frameCount = 0
     end
 end)
 
-createSwitch("เดินชนกระเด็น", 45, function(state)
-    spinActive = state
-end)
-
-createSwitch("กันโปร กระเด็นออกนอกแมพ", 85, function(state)
-    playerAntiFling = state
-    if not state then
-        SetOtherPlayersCollision(true)
+Tab5:Button({
+    Title = "บูส FPS ลดแสงมาก",
+    Callback = function()
+        local decalsye = true
+        local g = game
+        local w = g.Workspace
+        local l = g.Lighting
+        local t = w.Terrain
+        t.WaterWaveSize = 0
+        t.WaterWaveSpeed = 0
+        t.WaterReflectance = 0
+        t.WaterTransparency = 0
+        l.GlobalShadows = false
+        l.FogEnd = 9e9
+        l.Brightness = 0
+        for i, v in pairs(w:GetDescendants()) do
+            if v:IsA("Decal") or v:IsA("Texture") then v.Transparency = 1 end
+        end
     end
-end)
+})
 
-loadstring(game:HttpGet('https://raw.githubusercontent.com/M4VOWJ8IAKSR5WFRCCJ7AW5IW/ScrFr/refs/heads/main/The%20Strongest%20Battlegrounds-obfuscated'))()
+Tab5:Button({
+    Title = "บูส FPS ลดแสงนิด",
+    Callback = function()
+        local l = game.Lighting
+        l.GlobalShadows = true
+        l.Brightness = 1
+        l.FogEnd = 10000
+    end
+})
+
+Tab5:Button({
+    Title = "บูส FPS ภาพเดิม",
+    Callback = function()
+        local l = game.Lighting
+        l.GlobalShadows = true
+        l.Brightness = 2
+        l.FogEnd = 100000
+    end
+})
+
+local function createToggleButton(imageAsset)
+    if getgenv().OpenGuiButton then getgenv().OpenGuiButton:Destroy() end
+    
+    local gui = Instance.new("ScreenGui")
+    gui.Name = "ToggleGui_Kaprao"
+    gui.Parent = (gethui and gethui()) or player:WaitForChild("PlayerGui")
+    gui.IgnoreGuiInset = true
+    gui.ResetOnSpawn = false
+    
+    local frame = Instance.new("Frame", gui)
+    frame.Size = UDim2.new(0, 35, 0, 35)
+    frame.Position = UDim2.new(0, 20, 0, 150)
+    frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    frame.BackgroundTransparency = 0.1
+    frame.Active = true
+    
+    local corner = Instance.new("UICorner", frame)
+    corner.CornerRadius = UDim.new(0, 8) 
+    
+    local btn = Instance.new("ImageButton", frame)
+    btn.Size = UDim2.new(0, 23, 0, 23)
+    btn.Position = UDim2.new(0, 6, 0, 6)
+    btn.BackgroundTransparency = 1
+    btn.Image = imageAsset
+    
+    local dragging, dragStart, startPos
+    local hasDragged = false
+    
+    btn.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = frame.Position
+            hasDragged = false
+        end
+    end)
+
+    UIS.InputChanged:Connect(function(input)
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            local delta = input.Position - dragStart
+            if delta.Magnitude > 7 then hasDragged = true end
+            frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+
+    UIS.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = false
+        end
+    end)
+
+    btn.Activated:Connect(function()
+        if not hasDragged then
+            local customToggleUsed = false
+            pcall(function()
+                if Window and Window.Toggle then
+                    Window:Toggle()
+                    customToggleUsed = true
+                end
+            end)
+            if not customToggleUsed then
+                for _, v in pairs(game:GetService("CoreGui"):GetChildren()) do
+                    if v:IsA("ScreenGui") and (v.Name == "WindUI" or v:FindFirstChild("Main") or string.find(v.Name, "Wind")) then
+                        v.Enabled = not v.Enabled
+                    end
+                end
+                for _, v in pairs(player:WaitForChild("PlayerGui"):GetChildren()) do
+                    if v:IsA("ScreenGui") and (v.Name == "WindUI" or v:FindFirstChild("Main") or string.find(v.Name, "Wind")) then
+                        v.Enabled = not v.Enabled
+                    end
+                end
+            end
+        end
+    end)
+    
+    getgenv().OpenGuiButton = gui
+end
+
+createToggleButton("rbxassetid://117649776522765")
