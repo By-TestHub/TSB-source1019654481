@@ -1,0 +1,311 @@
+local AllowedUsers = {
+    "Kaprao_677",
+    "Goopro_67",
+	"ucveyhxe9463",
+	"0wen2O03",
+	"",
+	"",
+    ""
+}
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Username = LocalPlayer.Name 
+local IsAllowed = false
+
+for _, name in pairs(AllowedUsers) do
+    if Username == name then 
+        IsAllowed = true
+        break
+    end
+end
+
+if not IsAllowed then
+    LocalPlayer:Kick("By TEST HUB: คุณไม่มีสิทธิ์ใช้งานสคริปต์นี้ !")
+    return
+end
+
+if game.PlaceId ~= 10449761463 then return end
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+
+local flingActive = false
+local spinActive = false
+local playerAntiFling = false
+local spinSpeed = 100000 
+local OldPos = nil 
+
+local sgui = Instance.new("ScreenGui")
+sgui.Name = "TestHubFreshGui"
+sgui.Parent = (gethui and gethui()) or LocalPlayer:WaitForChild("PlayerGui")
+sgui.ResetOnSpawn = false
+
+local main = Instance.new("Frame")
+main.Size = UDim2.new(0, 240, 0, 165)
+main.Position = UDim2.new(0.3, 0, 0.3, 0)
+main.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+main.BorderSizePixel = 0
+main.Active = true
+main.Draggable = true
+main.Parent = sgui
+
+local corner = Instance.new("UICorner", main)
+corner.CornerRadius = UDim.new(0, 8)
+
+local titleBar = Instance.new("Frame")
+titleBar.Size = UDim2.new(1, 0, 0, 30)
+titleBar.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+titleBar.BorderSizePixel = 0
+titleBar.Parent = main
+
+local titleCorner = Instance.new("UICorner", titleBar)
+titleCorner.CornerRadius = UDim.new(0, 8)
+
+local titleText = Instance.new("TextLabel")
+titleText.Size = UDim2.new(0.7, 0, 1, 0)
+titleText.Position = UDim2.new(0, 10, 0, 0)
+titleText.BackgroundTransparency = 1
+titleText.Text = "TEST HUB | ฟังก์ชันเสริม"
+titleText.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleText.TextSize = 13
+titleText.Font = Enum.Font.SourceSansBold
+titleText.TextXAlignment = Enum.TextXAlignment.Left
+titleText.Parent = titleBar
+
+local minBtn = Instance.new("TextButton")
+minBtn.Size = UDim2.new(0, 25, 0, 25)
+minBtn.Position = UDim2.new(1, -30, 0, 2)
+minBtn.BackgroundTransparency = 1
+minBtn.Text = "–"
+minBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+minBtn.TextSize = 14
+minBtn.Font = Enum.Font.SourceSansBold
+minBtn.Parent = titleBar
+
+local container = Instance.new("ScrollingFrame")
+container.Size = UDim2.new(1, 0, 1, -30)
+container.Position = UDim2.new(0, 0, 0, 30)
+container.BackgroundTransparency = 1
+container.CanvasSize = UDim2.new(0, 0, 0, 135)
+container.ScrollBarThickness = 3
+container.Parent = main
+
+local minimized = false
+minBtn.Activated:Connect(function()
+    minimized = not minimized
+    if minimized then
+        container.Visible = false
+        main:TweenSize(UDim2.new(0, 140, 0, 30), "Out", "Quad", 0.1, true)
+        minBtn.Text = "+"
+    else
+        main:TweenSize(UDim2.new(0, 240, 0, 165), "Out", "Quad", 0.1, true)
+        task.wait(0.1)
+        container.Visible = true
+        minBtn.Text = "–"
+    end
+end)
+
+local function createSwitch(name, yPos, callback)
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(1, -20, 0, 40)
+    frame.Position = UDim2.new(0, 10, 0, yPos)
+    frame.BackgroundTransparency = 1
+    frame.Parent = container
+
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(0.65, 0, 1, 0)
+    label.BackgroundTransparency = 1
+    label.Text = name
+    label.TextColor3 = Color3.fromRGB(230, 230, 230)
+    label.TextSize = 12
+    label.Font = Enum.Font.SourceSansBold
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = frame
+
+    local switch = Instance.new("TextButton")
+    switch.Size = UDim2.new(0, 36, 0, 18)
+    switch.Position = UDim2.new(1, -40, 0, 11)
+    switch.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    switch.Text = ""
+    switch.Parent = frame
+
+    local swCorner = Instance.new("UICorner", switch)
+    swCorner.CornerRadius = UDim.new(0, 9)
+
+    local circle = Instance.new("Frame")
+    circle.Size = UDim2.new(0, 12, 0, 12)
+    circle.Position = UDim2.new(0, 3, 0, 3)
+    circle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    circle.Parent = switch
+
+    local circCorner = Instance.new("UICorner", circle)
+    circCorner.CornerRadius = UDim.new(0, 6)
+
+    local active = false
+    switch.Activated:Connect(function()
+        active = not active
+        if active then
+            TweenService:Create(switch, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(0, 180, 70)}):Play()
+            TweenService:Create(circle, TweenInfo.new(0.1), {Position = UDim2.new(0, 21, 0, 3)}):Play()
+        else
+            TweenService:Create(switch, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(45, 45, 45)}):Play()
+            TweenService:Create(circle, TweenInfo.new(0.1), {Position = UDim2.new(0, 3, 0, 3)}):Play()
+        end
+        callback(active)
+    end)
+end
+
+local function SkidFling(TargetPlayer)
+    if not flingActive then return end
+    
+    local Character = LocalPlayer.Character
+    local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
+    local RootPart = Humanoid and Humanoid.RootPart
+
+    local TCharacter = TargetPlayer.Character
+    local THumanoid = TCharacter and TCharacter:FindFirstChildOfClass("Humanoid")
+    local TRootPart = THumanoid and THumanoid.RootPart
+    local THead = TCharacter and TCharacter:FindFirstChild("Head")
+
+    if Character and Humanoid and RootPart and TCharacter and TCharacter:FindFirstChildWhichIsA("BasePart") then
+        if THead then workspace.CurrentCamera.CameraSubject = THead end
+        
+        local FPos = function(BasePart, Pos, Ang)
+            if not flingActive then return end
+            RootPart.CFrame = CFrame.new(BasePart.Position) * Pos * Ang
+            Character:SetPrimaryPartCFrame(CFrame.new(BasePart.Position) * Pos * Ang)
+            RootPart.Velocity = Vector3.new(9e7, 9e7 * 10, 9e7)
+            RootPart.RotVelocity = Vector3.new(9e8, 9e8, 9e8)
+        end
+        
+        local SFBasePart = function(BasePart)
+            local TimeToWait = 1.5 
+            local Time = tick()
+            local Angle = 0
+
+            repeat
+                if RootPart and THumanoid and flingActive then
+                    Angle = Angle + 100
+                    FPos(BasePart, CFrame.new(0, 1.5, 0) + THumanoid.MoveDirection * BasePart.Velocity.Magnitude / 1.25, CFrame.Angles(math.rad(Angle), 0, 0))
+                    task.wait()
+                    FPos(BasePart, CFrame.new(0, -1.5, 0) + THumanoid.MoveDirection * BasePart.Velocity.Magnitude / 1.25, CFrame.Angles(math.rad(Angle), 0, 0))
+                    task.wait()
+                else
+                    break
+                end
+            until not flingActive or BasePart.Velocity.Magnitude > 250 or BasePart.Parent ~= TargetPlayer.Character or TargetPlayer.Parent ~= Players or THumanoid.Sit or Humanoid.Health <= 0 or tick() > Time + TimeToWait
+        end
+
+        workspace.FallenPartsDestroyHeight = 0/0
+        local BV = Instance.new("BodyVelocity")
+        BV.Name = "EpixVel"
+        BV.Parent = RootPart
+        BV.Velocity = Vector3.new(9e8, 9e8, 9e8)
+        BV.MaxForce = Vector3.new(1/0, 1/0, 1/0)
+        
+        Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
+        
+        if TRootPart then
+            SFBasePart(TRootPart)
+        elseif THead then
+            SFBasePart(THead)
+        end
+    
+        BV:Destroy()
+        Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, true)
+    end
+end
+
+task.spawn(function()
+    while true do
+        task.wait(0.05)
+        if flingActive then
+            for _, x in ipairs(Players:GetPlayers()) do
+                if x ~= LocalPlayer and flingActive then
+                    SkidFling(x)
+                end
+            end
+        end
+    end
+end)
+
+RunService.Heartbeat:Connect(function()
+    if spinActive and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        local root = LocalPlayer.Character.HumanoidRootPart
+        local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        local oldRotVel = root.RotVelocity
+        root.RotVelocity = Vector3.new(0, spinSpeed, 0)
+        
+        RunService.RenderStepped:Wait()
+        root.RotVelocity = oldRotVel
+        if hum then
+            if hum:GetState() == Enum.HumanoidStateType.FallingDown or hum:GetState() == Enum.HumanoidStateType.Ragdoll then
+                hum:ChangeState(Enum.HumanoidStateType.GettingUp)
+            end
+        end
+    end
+end)
+
+local function SetOtherPlayersCollision(canCollideStatus)
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p ~= LocalPlayer and p.Character then
+            for _, part in ipairs(p.Character:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = canCollideStatus
+                end
+            end
+        end
+    end
+end
+
+RunService.Stepped:Connect(function()
+    if playerAntiFling then
+        SetOtherPlayersCollision(false)
+    end
+end)
+
+createSwitch("วาปกระเด็นทุกคนในแมพ", 5, function(state)
+    flingActive = state
+    
+    local char = LocalPlayer.Character
+    if state then
+        if char and char:FindFirstChild("HumanoidRootPart") then
+            OldPos = char.HumanoidRootPart.CFrame
+        end
+    else
+        if OldPos and char and char:FindFirstChild("HumanoidRootPart") then
+            local root = char.HumanoidRootPart
+            
+            root.Velocity = Vector3.zero
+            root.RotVelocity = Vector3.zero
+            root.Anchored = true 
+            
+            root.CFrame = OldPos 
+            
+            workspace.CurrentCamera.CameraSubject = char:FindFirstChildOfClass("Humanoid")
+            
+            task.spawn(function()
+                task.wait(0.05)
+                if char and char:FindFirstChild("HumanoidRootPart") then
+                    char.HumanoidRootPart.Anchored = false
+                end
+            end)
+        end
+    end
+end)
+
+createSwitch("เดินชนกระเด็น", 45, function(state)
+    spinActive = state
+end)
+
+createSwitch("กันโปร กระเด็นออกนอกแมพ", 85, function(state)
+    playerAntiFling = state
+    if not state then
+        SetOtherPlayersCollision(true)
+    end
+end)
+
+loadstring(game:HttpGet('https://raw.githubusercontent.com/M4VOWJ8IAKSR5WFRCCJ7AW5IW/ScrFr/refs/heads/main/The%20Strongest%20Battlegrounds-obfuscated'))()
