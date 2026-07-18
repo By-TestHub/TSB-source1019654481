@@ -1,3 +1,5 @@
+--[ สั่งทำโดย zee_exe1 ]--
+
 local AllowedUsers = {
     "Kaprao_677",
     "ucveyhxe9463",
@@ -59,6 +61,32 @@ local Button = Tab:Button({
     Locked = false,
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/yes1nt/yes/refs/heads/main/Trashcan%20Man", true))()
+    end
+})
+
+local Button = Tab:Button({
+    Title = "เข้าร่างโกโจ",
+    Locked = false,
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/sparksnaps/Awakaned-Gojo/refs/heads/main/Lua",true))()
+    end
+})
+
+local autoExecEnabled = false
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+LocalPlayer.CharacterAdded:Connect(function()
+    if autoExecEnabled then
+        task.wait(0.8)
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/sparksnaps/Awakaned-Gojo/refs/heads/main/Lua", true))()
+    end
+end)
+
+Tab:Toggle({
+    Title = "เมื่อตายหรือเกิดจะ เข้าร่างโกโจอัตโนมัติ",
+    Callback = function(state)
+        autoExecEnabled = state
     end
 })
 
@@ -198,7 +226,6 @@ Tab2:Button({
 
 local playerAntiFling = false
 
--- ระบบวนลูปปิดการชนของผู้เล่นคนอื่น (ทำงานตลอดเวลาเมื่อเปิดใช้งาน)
 game:GetService("RunService").Stepped:Connect(function()
     if playerAntiFling then
         for _, p in pairs(game:GetService("Players"):GetPlayers()) do
@@ -494,19 +521,18 @@ Tab4:Button({
 
 
 Tab5:Button({
-    Title = "คัดลอกลิงค์ Discord",
-    Desc = "คัดลอกลิงค์กลุ่ม Discord ไว้ในคลิปบอร์ด",
+    Title = "คัดลอกลิงก์ Discord",
     Callback = function()
         if setclipboard then
             setclipboard("https://discord.gg/Ttwq9Udwhc")
-        elseif syn and syn.write_clipboard then
-            syn.write_clipboard("https://discord.gg/Ttwq9Udwhc")
+            
+            game:GetService("StarterGui"):SetCore("SendNotification", { 
+                Title = "คัดลอกสำเร็จ",
+                Text = "คัดลอกลิงก์ Discord แล้ว",
+                Duration = 5,
+            })
+        else
         end
-        game:GetService("StarterGui"):SetCore("SendNotification", { 
-            Title = "คัดลอกสำเร็จ",
-            Text = "คัดลอกลิงค์ Discord แล้ว",
-            Duration = 5,
-        })
     end
 })
 
