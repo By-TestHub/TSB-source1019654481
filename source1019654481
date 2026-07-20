@@ -90,6 +90,14 @@ Tab:Toggle({
     end
 })
 
+local Button = Tab:Button({
+    Title = "เข้าร่างน้ำแตก",
+    Locked = false,
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Zuriyx/Emotes/refs/heads/main/Mainscript.lua.txt"))()
+    end
+})
+
 Tab:Button({
     Title = "กด หากต้องการใช้สกิวเหมือนเดิม (รีตัว)",
     Callback = function()
